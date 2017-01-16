@@ -58,7 +58,7 @@ describe "Virility" do
       })
     end
     it "Virility.poll should return all of the hashed responses with filtered strategies only" do
-      expect(Virility.poll(@url,[:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
+      expect(Virility.poll(@url, strategies: [:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
         :facebook=>{"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."},
         :linkedin=>{ "count":17, "fCnt":"17", "fCntPlusOne":"18", "url":"http:\/\/creativeallies.com" },
         :pinterest=>{"count"=>1, "url"=>"http://creativeallies.com"},
@@ -67,7 +67,7 @@ describe "Virility" do
       })
     end
     it "Virility.poll should return all of the hashed responses with filtered strategies only" do
-      expect(Virility.poll(@url,[:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
+      expect(Virility.poll(@url, strategies: [:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
         :facebook=>{"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."},
         :linkedin=>{ "count":17, "fCnt":"17", "fCntPlusOne":"18", "url":"http:\/\/creativeallies.com" },
         :pinterest=>{"count"=>1, "url"=>"http://creativeallies.com"},

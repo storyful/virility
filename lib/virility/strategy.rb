@@ -39,7 +39,11 @@ module Virility
     #
 
     def call_strategy
-      @response = census
+      response = census
+      if response.is_a?(Hash) && response[:error]
+        log("Virility error in #{self.class}: #{response[:error]}")
+      end
+      @response = response
     end
 
     #
@@ -97,5 +101,11 @@ module Virility
       @response.respond_to?(:parsed_response) and @response.parsed_response.is_a?(Hash)
     end
 
+    private
+
+    def log(message)
+      logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+      logger.debug(message)
+    end
   end
 end

@@ -18,6 +18,19 @@ describe "Virility::Facebook" do
   end
 
   describe "poll" do
+    context "when we are blocked by facebook" do
+      before(:each) do
+        response = { :error => {"message"=>"(#4) Application request limit reached", "type"=>"OAuthException", "is_transient"=>true, "code"=>4, "fbtrace_id"=>"CoS0pP7p8Lh"} }
+        @virility = Virility::Facebook.new(@url)
+        allow(@virility).to receive(:census) { response }
+      end
+
+      it 'should log an error message' do
+        expect(@virility).to receive(:log).with('Virility error in Virility::Facebook: {"message"=>"(#4) Application request limit reached", "type"=>"OAuthException", "is_transient"=>true, "code"=>4, "fbtrace_id"=>"CoS0pP7p8Lh"}')
+        @virility.results
+      end
+    end
+
     context "when there is not a valid result" do
       before(:each) do
         response = double("HTTParty::Response", :parsed_response => {"links_getStats_response"=>{"list"=>"true"}})
