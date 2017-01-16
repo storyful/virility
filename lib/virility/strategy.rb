@@ -63,7 +63,8 @@ module Virility
         begin
           poll
         rescue => e
-          puts "[virility#poll] #{self.class.to_s} => #{e}"
+          log("[virility#poll] #{self.class.to_s} => #{e}")
+          log(e.backtrace)
         end
       end
       @results

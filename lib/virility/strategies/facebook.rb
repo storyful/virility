@@ -8,9 +8,8 @@ module Virility
 
     def outcome
       response = @response.parsed_response.dig('share')
-      engagement = @response.parsed_response.dig('og_object', 'engagement')
-      response['engagement_count'] = engagement.dig('count')
-      response['social_sentence'] = engagement.dig('social_sentence')
+      response['engagement_count'] = @response.parsed_response.dig('og_object', 'engagement', 'count')
+      response['social_sentence'] = @response.parsed_response.dig('og_object', 'engagement', 'social_sentence')
       response
     end
 
