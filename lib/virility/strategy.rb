@@ -40,8 +40,8 @@ module Virility
 
     def call_strategy
       response = census
-      if response.is_a?(Hash) && response[:error]
-        log("Virility error in #{self.class}: #{response[:error]}")
+      if response.respond_to?(:key?) && response.key?('error')
+        log("Virility error in #{self.class}: #{response['error']}")
       end
       @response = response
     end

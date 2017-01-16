@@ -20,7 +20,11 @@ describe "Virility::Facebook" do
   describe "poll" do
     context "when we are blocked by facebook" do
       before(:each) do
-        response = { :error => {"message"=>"(#4) Application request limit reached", "type"=>"OAuthException", "is_transient"=>true, "code"=>4, "fbtrace_id"=>"CoS0pP7p8Lh"} }
+        error_hash = {"message"=>"(#4) Application request limit reached", "type"=>"OAuthException", "is_transient"=>true, "code"=>4, "fbtrace_id"=>"CoS0pP7p8Lh"}
+        response = double("HTTParty::Response")
+        allow(response).to receive(:key?).with('error') { true }
+        allow(response).to receive(:[]).with('error') { error_hash }
+
         @virility = Virility::Facebook.new(@url)
         allow(@virility).to receive(:census) { response }
       end
