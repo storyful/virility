@@ -8,7 +8,11 @@ module Virility
     )
 
     def census
-      self.class.get("http://www.linkedin.com/countserv/count/share?url=#{@original_url}&format=json")
+      params = {
+        url: @original_url,
+        format: 'json'
+      }
+      self.class.get("http://www.linkedin.com/countserv/count/share", query: params)
     end
 
     def count

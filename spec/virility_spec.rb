@@ -28,6 +28,21 @@ describe "Virility" do
   # Public API
   #
 
+  context 'URLs with ids in parameters' do
+    it 'gets the engagement numbers for the correct URL' do
+      urls = ['http://therealnews.com/t2/index.php?option=com_content&task=view&id=31&Itemid=74&jumival=18108',
+              'http://www.nzherald.co.nz/world/news/article.cfm?c_id=2&objectid=11785185&ref=rss']
+
+      urls.each do |test_url|
+        response = Virility.url(test_url)
+        expect(response.strategies[:linkedin].response['url']).to eq(test_url)
+        expect(response.strategies[:pinterest].response['url']).to eq(test_url)
+        expect(response.strategies[:facebook].response['id']).to eq(test_url)
+        # TODO: stumble_upon, reddit, plus_one
+      end
+    end
+  end
+
   describe "Public API testing" do
     before(:each) do
       @url = "http://creativeallies.com"
