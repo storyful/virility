@@ -31,10 +31,13 @@ describe "Virility" do
   context 'URLs with ids in parameters' do
     it 'gets the engagement numbers for the correct URL' do
       urls = ['http://therealnews.com/t2/index.php?option=com_content&task=view&id=31&Itemid=74&jumival=18108',
-              'http://www.nzherald.co.nz/world/news/article.cfm?c_id=2&objectid=11785185&ref=rss']
+              'http://www.nzherald.co.nz/world/news/article.cfm?c_id=2&objectid=11785185&ref=rss',
+              'http://www.nzherald.co.nz/business/news/article.cfm?c_id=3&objectid=11784904&ref=rss',
+              'http://www.nzherald.co.nz/hawkes-bay-today/news/article.cfm?c_id=1503462&objectid=11784368&ref=rss']
 
       urls.each do |test_url|
         response = Virility.url(test_url)
+        print "\n\n#{response.strategies[:facebook].response}\n\n"
         expect(response.strategies[:linkedin].response['url']).to eq(test_url)
         expect(response.strategies[:pinterest].response['url']).to eq(test_url)
         expect(response.strategies[:facebook].response['id']).to eq(test_url)
