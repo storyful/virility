@@ -37,7 +37,6 @@ describe "Virility" do
 
       urls.each do |test_url|
         response = Virility.url(test_url)
-        print "\n\n#{response.strategies[:facebook].response}\n\n"
         expect(response.strategies[:linkedin].response['url']).to eq(test_url)
         expect(response.strategies[:pinterest].response['url']).to eq(test_url)
         expect(response.strategies[:facebook].response['id']).to eq(test_url)
