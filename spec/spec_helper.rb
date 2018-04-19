@@ -20,12 +20,13 @@ end
 
 module Virility
   TESTING_STRATEGIES = {
-    :facebook => Virility::Facebook,
-    :pinterest => Virility::Pinterest,
-    :plus_one => Virility::PlusOne,
-    :stumble_upon => Virility::StumbleUpon,
-    :linkedin => Virility::Linkedin,
-    :reddit => Virility::Reddit
+    facebook:     Virility::Facebook,
+    pinterest:    Virility::Pinterest,
+    plus_one:     Virility::PlusOne,
+    stumble_upon: Virility::StumbleUpon,
+    linkedin:     Virility::Linkedin,
+    reddit:       Virility::Reddit,
+    vk:           Virility::Vk
   }
   FAKE_TESTING_STRATEGIES = [:digg, :instagram, :tumblr]
   FB_RESULTS  = { 'comment_count' => '4', 'share_count' => '97173', 'engagement_count' => '97384', 'social_sentence' => "97K people like this."}
