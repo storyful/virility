@@ -20,6 +20,7 @@ end
 
 module Virility
   TESTING_STRATEGIES = {
+    buffer:       Virility::Buffer,
     facebook:     Virility::Facebook,
     pinterest:    Virility::Pinterest,
     plus_one:     Virility::PlusOne,
