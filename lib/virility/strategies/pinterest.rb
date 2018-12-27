@@ -8,7 +8,7 @@ module Virility
     )
 
     def census
-      self.class.get("http://api.pinterest.com/v1/urls/count.json?url=#{@url}")
+      self.class.get("https://api.pinterest.com/v1/urls/count.json?url=#{@url}")
     end
 
     def count
