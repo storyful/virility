@@ -1,15 +1,21 @@
 module Virility
   class Facebook < Strategy
-    BASE_URL = 'https://graph.facebook.com/?fields=share,og_object{engagement,title}&id='.freeze
+    BASE_URL = 'https://graph.facebook.com/' \
+                "?access_token=#{@facebook_token}" \
+                '&fields=engagement' \
+                '&id='.freeze
 
     def census
-      self.class.get("#{BASE_URL}#{@url}", http_proxyaddr: @http_proxyaddr, http_proxyport: @http_proxyport)
+      self.class.get("#{BASE_URL}#{@url}",
+                     http_proxyaddr: @http_proxyaddr,
+                     http_proxyport: @http_proxyport)
     end
 
     def outcome
-      response = @response.parsed_response.dig('share')
-      response['engagement_count'] = @response.parsed_response.dig('og_object', 'engagement', 'count')
-      response['social_sentence'] = @response.parsed_response.dig('og_object', 'engagement', 'social_sentence')
+      parsed_response = @response.parsed_response
+      response = parsed_response.dig('engagement')
+      response['engagement_count'] = response.dig('share_count')
+      response['social_sentence'] = response.dig('reaction_count')
       response
     end
 
@@ -20,7 +26,9 @@ module Virility
   private
 
     def valid_response_test
-      @response.respond_to?(:parsed_response) && @response.parsed_response.is_a?(Hash) && !@response.parsed_response['share'].nil?
+      @response.respond_to?(:parsed_response) && \
+        @response.parsed_response.is_a?(Hash) && \
+        !@response.parsed_response['engagement'].nil?
     end
   end
 end

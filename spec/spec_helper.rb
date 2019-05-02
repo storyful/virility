@@ -30,7 +30,7 @@ module Virility
     vk:           Virility::Vk
   }
   FAKE_TESTING_STRATEGIES = [:digg, :instagram, :tumblr]
-  FB_RESULTS  = { 'comment_count' => '4', 'share_count' => '97173', 'engagement_count' => '97384', 'social_sentence' => "97K people like this."}
+  FB_RESULTS  =  { 'engagement_count' => 20, 'social_sentence' => 0 }
   FAKE_FB_RESULTS = [:face_count, :pages, :friends]
 end
 

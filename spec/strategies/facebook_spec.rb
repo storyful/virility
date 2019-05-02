@@ -76,9 +76,14 @@ describe "Virility::Facebook" do
     end
 
     context "when there is a valid result" do
-      let(:fb_response) { { 'share' => { 'comment_count' => '4', 'share_count' => '97173'},
-      'og_object' => { 'engagement' => { 'count' => '97384', 'social_sentence' => "97K people like this."},
-      title: "Guardians of the Galaxy (2014)", id: "10150298925420108"}, id: "http://www.imdb.com/title/tt2015381/"} }
+      let(:fb_response) do
+        { 'engagement' =>
+            { 'reaction_count' => 0,
+              'comment_count' => 0,
+              'share_count' => 20,
+              'comment_plugin_count' => 0 },
+          'id' => 'https://www.youtube.com/channel/UCiCr0_2qhfa-xP6gpMfDG0Q' }
+      end
       before(:each) do
         response = double("HTTParty::Response", parsed_response: fb_response)
         allow(Virility::Facebook).to receive(:get) { response }
@@ -89,7 +94,7 @@ describe "Virility::Facebook" do
         expect{ @virility.poll }.not_to raise_error
       end
 
-      {"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."}.each do |key, value|
+      { 'engagement_count' => 20, 'social_sentence' => 0 }.each do |key, value|
         it "should return #{value} for #{key}" do
           expect(@virility.send(key.to_sym)).to eq(value)
         end
@@ -97,18 +102,26 @@ describe "Virility::Facebook" do
     end
 
     context "when there is a valid result, but not all fields are present" do
-      let(:fb_response) { { 'share' => { 'comment_count' => '4', 'share_count' => '97173'},
-      'og_object' => { 'engagement' => { 'count' => '97384', 'social_sentence' => "97K people like this."},
-      title: "Guardians of the Galaxy (2014)", id: "10150298925420108"}, id: "http://www.imdb.com/title/tt2015381/"} }
+      let(:fb_response) do
+        { 'engagement' =>
+            { 'reaction_count' => 0,
+              'comment_count' => 0,
+              'share_count' => 20,
+              'comment_plugin_count' => 0 },
+          'id' => 'https://www.youtube.com/channel/UCiCr0_2qhfa-xP6gpMfDG0Q' }
+      end
+
       before(:each) do
         response = double('HTTParty::Response', parsed_response: fb_response)
         allow(Virility::Facebook).to receive(:get) { response }
         @virility = Virility::Facebook.new(@url)
+        @virility.poll
       end
-      it "should not raise an error" do
-        expect{ @virility.poll }.not_to raise_error
+
+      it 'should not raise an error' do
+        expect { @virility.poll }.not_to raise_error
       end
-      {"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."}.each do |key, value|
+      { 'engagement_count' => 20, 'social_sentence' => 0 }.each do |key, value|
         it "should return #{value} for #{key}" do
           expect(@virility.send(key.to_sym)).to eq(value)
         end
