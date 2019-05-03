@@ -21,8 +21,8 @@ Gem::Specification.new do |gem|
   # Development
   gem.add_development_dependency "rspec", "~> 3.4"
   gem.add_development_dependency "pry", "~> 0.10"
-  gem.add_development_dependency "koala", "~> 3.0.0"
   # Dependencies
   gem.add_dependency "httparty", "~> 0.11"
   gem.add_dependency "multi_json", "~> 1.11"
+  gem.add_dependency "koala", "~> 3.0.0"
 end

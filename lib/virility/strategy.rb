@@ -108,7 +108,7 @@ module Virility
     private
 
     def log(message)
-      logger = Logger.new(STDOUT)
+      logger = defined?(Rails) ? Rails.logger : ::Logger.new(STDOUT)
       logger.debug(message)
     end
   end
