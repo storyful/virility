@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'pry'
 require 'virility'
+require 'koala'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -33,6 +34,7 @@ module Virility
   FB_RESULTS  =  { 'engagement_count' => 20, 'social_sentence' => 0 }
   FAKE_FB_RESULTS = [:face_count, :pages, :friends]
 end
+
 
 #
 # Example Groups

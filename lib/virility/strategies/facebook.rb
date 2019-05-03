@@ -1,14 +1,23 @@
 module Virility
   class Facebook < Strategy
-    BASE_URL = 'https://graph.facebook.com/' \
-                "?access_token=#{@facebook_token}" \
+    def base_url
+       'https://graph.facebook.com/' \
+                "?access_token=#{facebook_token}" \
                 '&fields=engagement' \
-                '&id='.freeze
+                '&id='
+              end
 
     def census
-      self.class.get("#{BASE_URL}#{@url}",
+      self.class.get("#{base_url}#{@url}",
                      http_proxyaddr: @http_proxyaddr,
                      http_proxyport: @http_proxyport)
+    end
+
+    def facebook_token
+      oauth = Koala::Facebook::OAuth.new(ENV['FB_APP_ID'], ENV['FB_APP_SECRET'],
+         'https://virility.test')
+      token = Koala::Facebook::API.new(oauth.get_app_access_token)
+      token.access_token
     end
 
     def outcome

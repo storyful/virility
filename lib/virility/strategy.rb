@@ -53,7 +53,6 @@ module Virility
     #
 
     def collect_results
-      binding.pry
       if respond_to?(:outcome)
         @results = valid_response_test ? outcome : {}
       else
@@ -102,13 +101,14 @@ module Virility
     #
 
     def valid_response_test
-      @response.respond_to?(:parsed_response) && @response.parsed_response.is_a?(Hash)
+      @response.respond_to?(:parsed_response) && \
+        @response.parsed_response.is_a?(Hash)
     end
 
     private
 
     def log(message)
-      logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+      logger = Logger.new(STDOUT)
       logger.debug(message)
     end
   end
