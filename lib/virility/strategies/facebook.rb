@@ -41,7 +41,9 @@ module Virility
     end
 
     def fb_app_sample
-      @fb_app_sample ||= JSON.parse(ENV['FACEBOOK_OAUTH_ARRAY'])&.sample
+      @fb_app_sample ||= begin
+        JSON.parse(ENV['FACEBOOK_OAUTH_ARRAY'])&.sample.with_indifferent_acces
+      end
     end
 
     def fb_app_id
