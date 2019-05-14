@@ -2,6 +2,13 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Virility" do
 
+  before do
+    koala = instance_double(Koala::Facebook::API, access_token: 'abc')
+    oauth = instance_double(Koala::Facebook::OAuth, get_app_access_token: 123)
+    allow(Koala::Facebook::API).to receive(:new).and_return(koala)
+    allow(Koala::Facebook::OAuth).to receive(:new).and_return(oauth)
+  end
+
   #
   # Factory
   #
@@ -18,7 +25,8 @@ describe "Virility" do
     context "invalid strategies" do
       Virility::FAKE_TESTING_STRATEGIES.each do |strategy|
         it "#{strategy} should raise an error" do
-          expect{ Virility.factory(strategy, "http://creativeallies.com") }.to raise_error(Virility::UnknownStrategy, "#{strategy} Is Not A Known Strategy")
+          expect{ Virility.factory(strategy, "http://creativeallies.com") }
+            .to raise_error(Virility::UnknownStrategy, "#{strategy} Is Not A Known Strategy")
         end
       end
     end
@@ -39,7 +47,6 @@ describe "Virility" do
         response = Virility.url(test_url)
         expect(response.strategies[:linkedin].response['url']).to eq(test_url)
         expect(response.strategies[:pinterest].response['url']).to eq(test_url)
-        expect(response.strategies[:facebook].response['id']).to eq(test_url)
         # TODO: stumble_upon, reddit, plus_one
       end
     end

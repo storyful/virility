@@ -49,13 +49,13 @@ module Virility
     end
 
     def fb_app_id
-      return fb_app_sample[:consumer_key] if fb_app_sample
+      return fb_app_sample[:consumer_key] || fb_app_sample[:app_id] if fb_app_sample
 
       ENV['FB_APP_ID']
     end
 
     def fb_app_secret
-      return fb_app_sample[:consumer_secret] if fb_app_sample
+      return fb_app_sample[:consumer_secret] || fb_app_sample[:app_secret] if fb_app_sample
 
       ENV['FB_APP_SECRET']
     end
