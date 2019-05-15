@@ -3,6 +3,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe "Virility::Facebook" do
   before(:each) do
     @url = "http://creativeallies.com"
+    koala = instance_double(Koala::Facebook::API, access_token: 'abc')
+    oauth = instance_double(Koala::Facebook::OAuth, get_app_access_token: 123)
+    allow(Koala::Facebook::API).to receive(:new).and_return(koala)
+    allow(Koala::Facebook::OAuth).to receive(:new).and_return(oauth)
   end
 
   RSpec.shared_examples "no facebook results" do
@@ -20,8 +24,10 @@ describe "Virility::Facebook" do
   describe "poll" do
     context "when we are blocked by facebook" do
       before(:each) do
-        error_hash = {"message"=>"(#4) Application request limit reached", "type"=>"OAuthException", "is_transient"=>true, "code"=>4, "fbtrace_id"=>"CoS0pP7p8Lh"}
-        response = double("HTTParty::Response")
+        error_hash = {'message' => '(#4) Application request limit reached',
+                      'type' => 'OAuthException', 'is_transient' => true,
+                      'code' => 4, 'fbtrace_id' => 'CoS0pP7p8Lh'}
+        response = double(HTTParty::Response)
         allow(response).to receive(:key?).with('error') { true }
         allow(response).to receive(:[]).with('error') { error_hash }
 
@@ -76,20 +82,25 @@ describe "Virility::Facebook" do
     end
 
     context "when there is a valid result" do
-      let(:fb_response) { { 'share' => { 'comment_count' => '4', 'share_count' => '97173'},
-      'og_object' => { 'engagement' => { 'count' => '97384', 'social_sentence' => "97K people like this."},
-      title: "Guardians of the Galaxy (2014)", id: "10150298925420108"}, id: "http://www.imdb.com/title/tt2015381/"} }
+      let(:fb_response) do
+        { 'engagement' =>
+            { 'reaction_count' => 0,
+              'comment_count' => 0,
+              'share_count' => 20,
+              'comment_plugin_count' => 0 },
+          'id' => 'https://www.youtube.com/channel/UCiCr0_2qhfa-xP6gpMfDG0Q' }
+      end
       before(:each) do
         response = double("HTTParty::Response", parsed_response: fb_response)
         allow(Virility::Facebook).to receive(:get) { response }
         @virility = Virility::Facebook.new(@url)
       end
 
-      it "should not raise an error" do
+      it 'does not raise an error' do
         expect{ @virility.poll }.not_to raise_error
       end
 
-      {"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."}.each do |key, value|
+      { 'engagement_count' => 20, 'social_sentence' => 0 }.each do |key, value|
         it "should return #{value} for #{key}" do
           expect(@virility.send(key.to_sym)).to eq(value)
         end
@@ -97,18 +108,26 @@ describe "Virility::Facebook" do
     end
 
     context "when there is a valid result, but not all fields are present" do
-      let(:fb_response) { { 'share' => { 'comment_count' => '4', 'share_count' => '97173'},
-      'og_object' => { 'engagement' => { 'count' => '97384', 'social_sentence' => "97K people like this."},
-      title: "Guardians of the Galaxy (2014)", id: "10150298925420108"}, id: "http://www.imdb.com/title/tt2015381/"} }
+      let(:fb_response) do
+        { 'engagement' =>
+            { 'reaction_count' => 0,
+              'comment_count' => 0,
+              'share_count' => 20,
+              'comment_plugin_count' => 0 },
+          'id' => 'https://www.youtube.com/channel/UCiCr0_2qhfa-xP6gpMfDG0Q' }
+      end
+
       before(:each) do
         response = double('HTTParty::Response', parsed_response: fb_response)
         allow(Virility::Facebook).to receive(:get) { response }
         @virility = Virility::Facebook.new(@url)
+        @virility.poll
       end
-      it "should not raise an error" do
-        expect{ @virility.poll }.not_to raise_error
+
+      it 'should not raise an error' do
+        expect { @virility.poll }.not_to raise_error
       end
-      {"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."}.each do |key, value|
+      { 'engagement_count' => 20, 'social_sentence' => 0 }.each do |key, value|
         it "should return #{value} for #{key}" do
           expect(@virility.send(key.to_sym)).to eq(value)
         end

@@ -6,12 +6,13 @@ module Virility
     attr_accessor :url, :response, :results, :original_url,
                   :http_proxyaddr, :http_proxyport
 
-    def initialize(url, proxy: {})
+    def initialize(url, proxy: {}, facebook_token: '')
       @original_url = url
       @url = encode(url)
       @results = {}
       @http_proxyaddr = proxy.dig(:http_proxyaddr)
       @http_proxyport = proxy.dig(:http_proxyport)
+      @facebook_token = facebook_token
     end
 
     #
@@ -100,13 +101,14 @@ module Virility
     #
 
     def valid_response_test
-      @response.respond_to?(:parsed_response) and @response.parsed_response.is_a?(Hash)
+      @response.respond_to?(:parsed_response) && \
+        @response.parsed_response.is_a?(Hash)
     end
 
     private
 
     def log(message)
-      logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+      logger = defined?(Rails) ? Rails.logger : ::Logger.new(STDOUT)
       logger.debug(message)
     end
   end

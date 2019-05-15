@@ -33,7 +33,7 @@ describe "Virility::Reddit" do
       it_should_behave_like "no context results"
     end
 
-    context "when there is a result but parsed_response is weird" do
+    context 'when there is a result but parsed_response is weird' do
       before(:each) do
         response = double("HTTParty::Response", :parsed_response => Object.new)
         allow(Virility::Reddit).to receive(:get) { response }

@@ -2,6 +2,13 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Virility" do
 
+  before do
+    koala = instance_double(Koala::Facebook::API, access_token: 'abc')
+    oauth = instance_double(Koala::Facebook::OAuth, get_app_access_token: 123)
+    allow(Koala::Facebook::API).to receive(:new).and_return(koala)
+    allow(Koala::Facebook::OAuth).to receive(:new).and_return(oauth)
+  end
+
   #
   # Factory
   #
@@ -18,7 +25,8 @@ describe "Virility" do
     context "invalid strategies" do
       Virility::FAKE_TESTING_STRATEGIES.each do |strategy|
         it "#{strategy} should raise an error" do
-          expect{ Virility.factory(strategy, "http://creativeallies.com") }.to raise_error(Virility::UnknownStrategy, "#{strategy} Is Not A Known Strategy")
+          expect{ Virility.factory(strategy, "http://creativeallies.com") }
+            .to raise_error(Virility::UnknownStrategy, "#{strategy} Is Not A Known Strategy")
         end
       end
     end
@@ -39,7 +47,6 @@ describe "Virility" do
         response = Virility.url(test_url)
         expect(response.strategies[:linkedin].response['url']).to eq(test_url)
         expect(response.strategies[:pinterest].response['url']).to eq(test_url)
-        expect(response.strategies[:facebook].response['id']).to eq(test_url)
         # TODO: stumble_upon, reddit, plus_one
       end
     end
@@ -49,7 +56,7 @@ describe "Virility" do
     before(:each) do
       @url = "http://creativeallies.com"
       allow(Virility::Buffer).to receive(:get) { double("HTTParty::Response", :parsed_response => {"shares"=>5}) }
-      allow(Virility::Facebook).to receive(:get) { double("HTTParty::Response", :parsed_response => { 'share' => { 'comment_count' => '4', 'share_count' => '97173'}, 'og_object' => { 'engagement' => { 'count' => '97384', 'social_sentence' => "97K people like this."}, title: "Guardians of the Galaxy (2014)", id: "10150298925420108"}, id: "http://www.imdb.com/title/tt2015381/"}) }
+      allow(Virility::Facebook).to receive(:get) { double("HTTParty::Response", :parsed_response => {"engagement"=>{"reaction_count"=>0, "comment_count"=>0, "share_count"=>20, "comment_plugin_count"=>0}, "id"=>"https://www.youtube.com/channel/UCiCr0_2qhfa-xP6gpMfDG0Q"}) }
       allow(Virility::Pinterest).to receive(:get) { double("HTTParty::Response", :parsed_response => {"count"=>1, "url"=>"http://creativeallies.com"}) }
       allow(Virility::PlusOne).to receive(:get) { double("HTTParty::Response", :parsed_response => {"shares"=>"8"}) }
       allow(Virility::StumbleUpon).to receive(:get) { double("HTTParty::Response", :parsed_response => {"url"=>"http://creativeallies.com/", "in_index"=>true, "publicid"=>"2UhTwK", "views"=>4731, "title"=>"Creative Allies | Create Art For Rockstars | Upload For A Chance To Win", "thumbnail"=>"http://cdn.stumble-upon.com/mthumb/388/49348388.jpg", "thumbnail_b"=>"http://cdn.stumble-upon.com/images/nobthumb.png", "submit_link"=>"http://www.stumbleupon.com/submit/?url=http://creativeallies.com/", "badge_link"=>"http://www.stumbleupon.com/badge/?url=http://creativeallies.com/", "info_link"=>"http://www.stumbleupon.com/url/creativeallies.com/"}) }
@@ -59,19 +66,19 @@ describe "Virility" do
 
     it "Virility.counts should return a hash of counts" do
       expect(Virility.counts(@url)).to eq(
-        { buffer: 5, facebook: 97384, linkedin: 17, pinterest: 1, plus_one: 8,
+        { buffer: 5, facebook: 20, linkedin: 17, pinterest: 1, plus_one: 8,
           reddit: 35, stumble_upon: 4731, vk: 14 }
       )
     end
 
     it "Virility.total should return the total count" do
-      expect(Virility.total(@url)).to eq(102195)
+      expect(Virility.total(@url)).to eq(4831)
     end
 
     it "Virility.poll should return all of the hashed responses" do
       expect(Virility.poll(@url)).to eq(
         { :buffer=>{"shares"=>5},
-          :facebook=>{"comment_count"=>"4", "share_count"=>"97173", "engagement_count"=>"97384", "social_sentence"=>"97K people like this."},
+          :facebook=>{"comment_count"=>0, "comment_plugin_count"=>0, "engagement_count"=>20, "reaction_count"=>0, "share_count"=>20, "social_sentence"=>0},
           :linkedin=>{ "count":17, "fCnt":"17", "fCntPlusOne":"18", "url":"http:\/\/creativeallies.com" },
           :pinterest=>{"count"=>1, "url"=>"http://creativeallies.com"},
           :plus_one=>{"shares"=>"8"},
@@ -84,7 +91,7 @@ describe "Virility" do
     it "Virility.poll should return all of the hashed responses with filtered strategies only" do
       expect(Virility.poll(@url, strategies: [:buffer,:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
         :buffer=>{"shares"=>5},
-        :facebook=>{"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."},
+        :facebook=>{"comment_count"=>0, "comment_plugin_count"=>0, "engagement_count"=>20, "reaction_count"=>0, "share_count"=>20, "social_sentence"=>0},
         :linkedin=>{ "count":17, "fCnt":"17", "fCntPlusOne":"18", "url":"http:\/\/creativeallies.com" },
         :pinterest=>{"count"=>1, "url"=>"http://creativeallies.com"},
         :plus_one=>{"shares"=>"8"},
@@ -94,7 +101,7 @@ describe "Virility" do
     it "Virility.poll should return all of the hashed responses with filtered strategies only" do
       expect(Virility.poll(@url, strategies: [:buffer,:facebook,:linkedin,:pinterest,:plus_one,:stumble_upon])).to eq({
         :buffer=>{"shares"=>5},
-        :facebook=>{"share_count"=>"97173", "engagement_count"=>'97384', "comment_count"=>"4", 'social_sentence' => "97K people like this."},
+        :facebook=>{"comment_count"=>0, "comment_plugin_count"=>0, "engagement_count"=>20, "reaction_count"=>0, "share_count"=>20, "social_sentence"=>0},
         :linkedin=>{ "count":17, "fCnt":"17", "fCntPlusOne":"18", "url":"http:\/\/creativeallies.com" },
         :pinterest=>{"count"=>1, "url"=>"http://creativeallies.com"},
         :plus_one=>{"shares"=>"8"},

@@ -1,0 +1,21 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-rspec
+  - rubocop-performance
+
+Metrics/LineLength:
+  Max: 120
+
+Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+   - 'spec/**/*.rb'
+
+AllCops:
+  TargetRubyVersion: 2.3
+  Exclude:
+    - Gemfile
+    - Guardfile
